@@ -1,43 +1,66 @@
-import { useState } from 'preact/hooks'
-import preactLogo from './assets/preact.svg'
-import viteLogo from '/vite.svg'
-import './app.css'
+import { useState } from 'react';
+import axios from 'axios';
+import './App.css';
 
-export function App() {
-  const [count, setCount] = useState(0)
+function App() {
+  const [jobPosition, setJobPosition] = useState('');
+  const [jobExperience, setJobExperience] = useState('');
+
+  const handleStartInterview = async (e) => {
+  e.preventDefault();
+  console.log("Sending data to backend:", { jobPosition, jobExperience });
+
+  try {
+    // Send a POST request to our backend
+    const response = await axios.post('http://localhost:4000/api/interviews/start', {
+      jobPosition,
+      jobExperience,
+    });
+
+    console.log('Backend response:', response.data);
+    alert('Interview created successfully! Check the console for the response.');
+
+    // In the future, we will redirect to the interview page here
+
+  } catch (error) {
+    console.error('Error starting interview:', error);
+    alert('Failed to start interview. Check the console for errors.');
+  }
+};
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} class="logo" alt="Vite logo" />
-        </a>
-        <a href="https://preactjs.com" target="_blank">
-          <img src={preactLogo} class="logo preact" alt="Preact logo" />
-        </a>
+    <div className="app-container">
+      <div className="form-container">
+        <h1>MERN AI Interviewer</h1>
+        <p>Enter details below to start your mock interview.</p>
+        <form onSubmit={handleStartInterview}>
+          <div className="input-group">
+            <label htmlFor="jobPosition">Job Position</label>
+            <input
+              id="jobPosition"
+              type="text"
+              value={jobPosition}
+              onChange={(e) => setJobPosition(e.target.value)}
+              placeholder="E.g., React Developer"
+              required
+            />
+          </div>
+          <div className="input-group">
+            <label htmlFor="jobExperience">Years of Experience</label>
+            <input
+              id="jobExperience"
+              type="number"
+              value={jobExperience}
+              onChange={(e) => setJobExperience(e.target.value)}
+              placeholder="E.g., 5"
+              required
+            />
+          </div>
+          <button type="submit" className="start-button">Start Interview</button>
+        </form>
       </div>
-      <h1>Vite + Preact</h1>
-      <div class="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/app.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p>
-        Check out{' '}
-        <a
-          href="https://preactjs.com/guide/v10/getting-started#create-a-vite-powered-preact-app"
-          target="_blank"
-        >
-          create-preact
-        </a>
-        , the official Preact + Vite starter
-      </p>
-      <p class="read-the-docs">
-        Click on the Vite and Preact logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
+
+export default App;
