@@ -22,6 +22,8 @@ app.use('/api/interviews', interviewRoutes);
 const feedbackRoutes = require('./routes/feedbackRoutes');
 app.use('/api/feedback', feedbackRoutes);
 
+const authRoutes = require('./routes/authRoutes');
+app.use('/api/auth', authRoutes);
 // A simple test route
 app.get('/api/test', (req, res) => {
   res.json({ message: 'Hello! The server is running correctly.' });

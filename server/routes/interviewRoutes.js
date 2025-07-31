@@ -1,4 +1,5 @@
 const express = require('express');
+const { protect } = require('../middleware/authMiddleware');
 const router = express.Router();
 const Interview = require('../models/Interview');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
@@ -9,7 +10,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
 // Route to start a new interview
 // POST /api/interviews/start
-router.post('/start', async (req, res) => {
+router.post('/start',protect, async (req, res) => {
     try {
         const { jobPosition, jobExperience } = req.body;
 
@@ -27,7 +28,7 @@ router.post('/start', async (req, res) => {
             jobPosition,
             jobExperience,
             questions: questionsArray, // Save the AI-generated questions
-            createdBy: 'test_user' // Placeholder user
+            createdBy: req.user.id // Placeholder user
         });
 
         await newInterview.save();
@@ -67,5 +68,37 @@ router.put('/:id/complete', async (req, res) => {
     }
 });
 
+// GET /api/interviews/history
+// Gets all interviews for the logged-in user
+router.get('/history', protect, async (req, res) => {
+    try {
+        // We find interviews where 'createdBy' matches the user's ID from the token
+        const interviews = await Interview.find({ createdBy: req.user.id });
+        res.status(200).json(interviews);
+    } catch (error) {
+        console.error("Error fetching history:", error);
+        res.status(500).json({ message: 'Server error while fetching history.' });
+    }
+});
+// GET /api/interviews/:id
+// Gets a single interview by its ID
+router.get('/:id', protect, async (req, res) => {
+    try {
+        const interview = await Interview.findById(req.params.id);
 
+        if (!interview) {
+            return res.status(404).json({ message: 'Interview not found' });
+        }
+
+        // Ensure the user owns this interview
+        if (interview.createdBy.toString() !== req.user.id) {
+            return res.status(401).json({ message: 'Not authorized' });
+        }
+
+        res.status(200).json(interview);
+    } catch (error) {
+        console.error("Error fetching single interview:", error);
+        res.status(500).json({ message: 'Server error while fetching interview.' });
+    }
+});
 module.exports = router;
