@@ -1,18 +1,28 @@
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// This allows our server to accept JSON data and allows our frontend to connect
+// Middleware
 app.use(cors());
 app.use(express.json());
-// --- Add these two lines ---
+
+// --- MongoDB Connection ---
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log("✅ Successfully connected to MongoDB!"))
+  .catch((error) => console.error("❌ MongoDB connection error: ", error));
+
+// --- API Routes ---
 const interviewRoutes = require('./routes/interviewRoutes');
 app.use('/api/interviews', interviewRoutes);
-// ---------------------------
-// A simple test route to make sure the server is working
+
+const feedbackRoutes = require('./routes/feedbackRoutes');
+app.use('/api/feedback', feedbackRoutes);
+
+// A simple test route
 app.get('/api/test', (req, res) => {
   res.json({ message: 'Hello! The server is running correctly.' });
 });

@@ -10,7 +10,7 @@ const questionSchema = new mongoose.Schema({
 const interviewSchema = new mongoose.Schema({
     jobPosition: { type: String, required: true },
     jobExperience: { type: String, required: true },
-    createdBy: { type: String, required: true }, // We'll add the real user ID later
+    createdBy: { type: String, required: true },
     questions: [questionSchema],
 }, { timestamps: true });
 

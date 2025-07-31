@@ -1,34 +1,39 @@
 import { useState } from 'react';
 import axios from 'axios';
+import Interview from './interview.jsx';
 import './App.css';
 
 function App() {
   const [jobPosition, setJobPosition] = useState('');
   const [jobExperience, setJobExperience] = useState('');
+  const [interviewData, setInterviewData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleStartInterview = async (e) => {
-  e.preventDefault();
-  console.log("Sending data to backend:", { jobPosition, jobExperience });
+    e.preventDefault();
+    setIsLoading(true);
 
-  try {
-    // Send a POST request to our backend
-    const response = await axios.post('http://localhost:4000/api/interviews/start', {
-      jobPosition,
-      jobExperience,
-    });
+    try {
+      const response = await axios.post('http://localhost:4000/api/interviews/start', {
+        jobPosition,
+        jobExperience,
+      });
+      // This line is crucial - it saves the whole object, including the ID
+      setInterviewData(response.data); 
+    } catch (error) {
+      console.error('Error starting interview:', error);
+      alert('Failed to start interview. Check the console for errors.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    console.log('Backend response:', response.data);
-    alert('Interview created successfully! Check the console for the response.');
-
-    // In the future, we will redirect to the interview page here
-
-  } catch (error) {
-    console.error('Error starting interview:', error);
-    alert('Failed to start interview. Check the console for errors.');
+  if (interviewData) {
+    return <Interview interviewData={interviewData} />;
   }
-};
 
   return (
+    // ... the rest of your form JSX ...
     <div className="app-container">
       <div className="form-container">
         <h1>MERN AI Interviewer</h1>
@@ -56,7 +61,9 @@ function App() {
               required
             />
           </div>
-          <button type="submit" className="start-button">Start Interview</button>
+          <button type="submit" className="start-button" disabled={isLoading}>
+            {isLoading ? 'Generating Questions...' : 'Start Interview'}
+          </button>
         </form>
       </div>
     </div>

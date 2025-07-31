@@ -66,3 +66,54 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+.question-card {
+  background-color: #333;
+  padding: 25px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.question-text {
+  font-size: 1.4em;
+  line-height: 1.6;
+}
+
+.answer-textarea {
+  width: 100%;
+  min-height: 150px;
+  background-color: #1a1a1a;
+  border: 1px solid #444;
+  color: white;
+  padding: 15px;
+  font-size: 1.1em;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+}
+
+.controls {
+  display: flex;
+  gap: 15px;
+}
+
+.control-button {
+  flex-grow: 1;
+  padding: 15px;
+  font-size: 1.1em;
+  font-weight: bold;
+  color: #fff;
+  background-color: #5e4ae3;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.control-button:hover {
+  background-color: #4d3abd;
+}
+
+.control-button:disabled {
+  background-color: #444;
+  cursor: not-allowed;
+}
